@@ -3,8 +3,9 @@ import sirv from 'sirv'
 import { tinyws, TinyWSRequest } from 'tinyws'
 import type WebSocket from 'ws'
 import { SyncTexJs } from './synctex/index.js'
+import { resolve } from 'path'
 
-const pdf = process.argv[process.argv.length  - 1]
+const pdf = resolve(process.argv[process.argv.length  - 1])
 const port = process.argv[process.argv.length  - 2]
 const app = new App<any, Request & TinyWSRequest>()
 const synctex = new SyncTexJs()
@@ -48,6 +49,6 @@ app
    })
    .listen(parseInt(port), () => {
       console.log(`Viewer:  http://localhost:${port}/`)
-      console.log(`Refresh: https://localhost:${port}/refresh?pdf=<string>`)
-      console.log(`SyncTeX: https://localhost:${port}/synctex?pdf=<string>&line=<numebr>&tex=<string>`)
+      console.log(`Refresh: http://localhost:${port}/refresh?pdf=${pdf}`)
+      console.log(`SyncTeX: http://localhost:${port}/synctex?pdf=${pdf}&line=<numebr>&tex=<string>`)
    })

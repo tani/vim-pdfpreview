@@ -270,7 +270,7 @@ class LateXWorkshopPdfViewer implements ILatexWorkshopPdfViewer {
                     // https://github.com/James-Yu/LaTeX-Workshop/issues/1871
                     PDFViewerApplicationOptions.set('spreadModeOnLoad', pack.spreadMode)
 
-                    void PDFViewerApplication.open(`${utils.pdfFilePrefix}${this.encodedPdfFilePath}`).then( () => {
+                    void PDFViewerApplication.open(`${this.encodedPdfFilePath}`).then( () => {
                         // reset the document title to the original value to avoid duplication
                         document.title = this.documentTitle
                         // ensure that trimming is invoked if needed.
