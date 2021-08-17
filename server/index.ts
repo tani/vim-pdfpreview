@@ -1,3 +1,5 @@
+// Copyright (c) 2021 TANIGUCHI Masaya. All Rights Reserved. MIT License
+
 import { App, Request } from '@tinyhttp/app'
 import sirv from 'sirv'
 import { tinyws, TinyWSRequest } from 'tinyws'
