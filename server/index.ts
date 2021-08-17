@@ -13,7 +13,6 @@ let conns: WebSocket[] = []
 app
    .use(tinyws())
    .use('/viewer', sirv('viewer'))
-   .use('/latexworkshop', sirv('latexworkshop'))
    .get('/pdf/*', async (req, res) => {
       const absolutePath = req.path.replace('/pdf', '')
       res.sendFile(absolutePath)
