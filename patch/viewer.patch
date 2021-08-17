@@ -1,0 +1,17 @@
+diff -urN ..//LaTeX-Workshop/viewer/components/utils.ts viewer/components/utils.ts
+--- ..//LaTeX-Workshop/viewer/components/utils.ts	2021-08-14 22:19:00.974551200 +0900
++++ viewer/components/utils.ts	2021-08-18 00:09:42.562392400 +0900
+@@ -1,4 +1,4 @@
+-export const pdfFilePrefix = 'pdf..'
++export const pdfFilePrefix = ''
+ 
+ // We use base64url to encode the path of PDF file.
+ // https://github.com/James-Yu/LaTeX-Workshop/pull/1501
+@@ -10,6 +10,7 @@
+ }
+ 
+ export function decodePath(b64url: string): string {
++  return b64url
+   const tmp = b64url + '='.repeat((4 - b64url.length % 4) % 4)
+   const b64 = tmp.replace(/-/g, '+').replace(/_/g, '/')
+   const s = window.atob(b64)
