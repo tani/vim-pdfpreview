@@ -8,8 +8,9 @@
     "w3pdf": "bin/w3pdf.mjs"
   },
   "scripts": {
-    "prebuild": "patch -p0 -N -r- < patch/viewer.patch",
-    "build": "tsc -p server/tsconfig.json && tsc -p viewer/tsconfig.json"
+    "patch": "patch -p0 -N -r- < patch/viewer.patch",
+    "build": "tsc -p server/tsconfig.json && tsc -p viewer/tsconfig.json",
+    "prepare": "tsc -p server/tsconfig.json && tsc -p viewer/tsconfig.json"
   },
   "author": "TANIGUCHI Masaya",
   "license": "MIT",
