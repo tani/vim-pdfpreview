@@ -8,7 +8,7 @@ import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { createRequire } from 'module'
 
-export default function(pdf: string, port = 8080) {
+export default function(pdf: string, port: number) {
    const app = new App<any, Request & TinyWSRequest>()
    const synctex = new SyncTexJs()
    const connsMap: Map<string, WebSocket[]> = new Map()
