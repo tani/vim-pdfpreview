@@ -3,10 +3,10 @@ import { App, Request } from '@tinyhttp/app'
 import sirv from 'sirv'
 import { tinyws, TinyWSRequest } from 'tinyws'
 import type WebSocket from 'ws'
-import { SyncTexJs } from './synctex/index.js'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { createRequire } from 'module'
+import { SyncTexJs } from './synctex/index.js'
 
 export default function(pdf: string, port: number) {
    const app = new App<any, Request & TinyWSRequest>()
