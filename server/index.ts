@@ -25,7 +25,7 @@ export default function(pdf: string, port: number) {
       .get('/refresh', async (req, res) => {
          // localhost:8080/refresh?pdf=/absolute/path/to/pdf
          const pdf = req.query.pdf as any
-         if (pdf) {
+         if (!pdf) {
             for (const conns of connsMap.values()) {
                conns.forEach(conn => conn.send(JSON.stringify({ type: 'refresh' })))
             }
