@@ -6,7 +6,7 @@ import type WebSocket from 'ws'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { createRequire } from 'module'
-import { SyncTexJs } from './synctex/index.js'
+import { SyncTexJs, isSameRealPath } from './synctex/index.js'
 
 export default function(pdf: string, port: number) {
    const app = new App<any, Request & TinyWSRequest>()
@@ -20,6 +20,7 @@ export default function(pdf: string, port: number) {
       .use('/build', sirv(dirname(createRequire(import.meta.url).resolve('pdfjs-dist'))))
       .get('/pdf/*', async (req, res) => {
          const absolutePath = req.path.replace('/pdf', '')
+         res.set('Cache-Control', 'no-store')
          res.sendFile(absolutePath)
       })
       .get('/refresh', async (req, res) => {
@@ -38,7 +39,11 @@ export default function(pdf: string, port: number) {
          // localhost:8080/synctex?line=10&tex=/absolute/path/to/tex&pdf=/absolute/path/to/pdf
          const { line, tex, pdf } = req.query as any
          const data = synctex.syncTexJsForward(parseInt(line), tex, pdf)
-         connsMap.get(pdf)?.forEach(conn => conn.send(JSON.stringify({ type: 'synctex', data })))
+         for (const key of connsMap.keys()) {
+            if (isSameRealPath(key, pdf)) {
+               connsMap.get(key)?.forEach(conn => conn.send(JSON.stringify({ type: 'synctex', data })))
+            }
+         }
          res.sendStatus(200)
       })
       .get('/', async (req, res) => {
