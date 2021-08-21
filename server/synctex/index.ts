@@ -14,7 +14,7 @@ function normalize(filePath: string) {
     return normPath
 }
 
-export function isSameRealPath(filePathA: string, filePathB: string): boolean {
+function isSameRealPath(filePathA: string, filePathB: string): boolean {
     const a = normalize(fs.realpathSync(path.normalize(filePathA)))
     const b = normalize(fs.realpathSync(path.normalize(filePathB)))
     return a === b
