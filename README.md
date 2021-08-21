@@ -15,7 +15,6 @@ $ yarn add -g tani/w3pdf
 
 - Launch server: `w3pdf -p 8080 /path/to/pdf`
 - Forward Search with SyncTeX: `curl localhost:8080/synctex?pdf=/path/to/pdf&tex=/path/to/tex&line=89`
-- Refresh/Reload PDF: `curl localhost:8080/synctex?pdf=/path/to/pdf`
 
 ## License
 
