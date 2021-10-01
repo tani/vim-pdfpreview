@@ -7,7 +7,7 @@ specifiers:
   iconv-lite: ^0.6.3
   pdfjs-dist: ^2.9.359
   sirv: ^1.0.14
-  tinyws: ^0.0.5
+  tinyws: ^0.1.0
   typescript: 4.3.5
   ws: ^7.0.0
 
@@ -17,7 +17,7 @@ dependencies:
   iconv-lite: 0.6.3
   pdfjs-dist: 2.9.359
   sirv: 1.0.14
-  tinyws: 0.0.5_ws@7.5.3
+  tinyws: 0.1.0_ws@7.5.3
   ws: 7.5.3
 
 devDependencies:
@@ -239,11 +239,11 @@ packages:
       totalist: 1.1.0
     dev: false
 
-  /tinyws/0.0.5_ws@7.5.3:
-    resolution: {integrity: sha512-qp9nIm3uxdRjJzjsiZQ2zc3pxNDf8Gk99b1CHbUzx+sMGwBSyUw4tcD78x1SSTpnBUH6xgJ2+zf9N3sOqs812g==}
+  /tinyws/0.1.0_ws@7.5.3:
+    resolution: {integrity: sha512-6WQ2FlFM7qm6lAXxeKnzsAEfmnBHz5W5EwonNs52V0++YfK1IoCCAWM429afcChFE9BFrDgOFnq7ligaWMsa/A==}
     engines: {node: '>=12.4'}
     peerDependencies:
-      ws: '>=7'
+      ws: '>=8'
     dependencies:
       ws: 7.5.3
     dev: false
