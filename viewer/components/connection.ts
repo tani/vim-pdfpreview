@@ -1,5 +1,5 @@
-import type {ClientRequest} from './protocol.js'
-import type {ILatexWorkshopPdfViewer} from './interface.js'
+import type {ClientRequest} from './protocol.ts'
+import type {ILatexWorkshopPdfViewer} from './interface.ts'
 
 export interface IConnectionPort {
     send(message: ClientRequest): void | Promise<void>,

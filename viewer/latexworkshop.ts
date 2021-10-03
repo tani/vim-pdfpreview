@@ -1,10 +1,10 @@
-import {IConnectionPort, createConnectionPort} from './components/connection.js'
-import type {IDisposable, ILatexWorkshopPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions} from './components/interface.js'
-import {SyncTex} from './components/synctex.js'
-import {PageTrimmer} from './components/pagetrimmer.js'
-import type {ClientRequest, ServerResponse, PanelManagerResponse, PanelRequest, PdfViewerState} from './components/protocol.js'
-import * as utils from './components/utils.js'
-import {ViewerHistory} from './components/viewerhistory.js'
+import {IConnectionPort, createConnectionPort} from './components/connection.ts'
+import type {IDisposable, ILatexWorkshopPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions} from './components/interface.ts'
+import {SyncTex} from './components/synctex.ts'
+import {PageTrimmer} from './components/pagetrimmer.ts'
+import type {ClientRequest, ServerResponse, PanelManagerResponse, PanelRequest, PdfViewerState} from './components/protocol.ts'
+import * as utils from './components/utils.ts'
+import {ViewerHistory} from './components/viewerhistory.ts'
 
 declare const PDFViewerApplication: IPDFViewerApplication
 declare const PDFViewerApplicationOptions: IPDFViewerApplicationOptions

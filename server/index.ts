@@ -1,59 +1,80 @@
-// Copyright (c) 2021 TANIGUCHI Masaya. All Rights Reserved. MIT License
-import { App, Request } from '@tinyhttp/app'
-import sirv from 'sirv'
-import { tinyws, TinyWSRequest } from 'tinyws'
-import type WebSocket from 'ws'
-import { watch } from 'fs'
-import { resolve, dirname } from 'path'
-import { fileURLToPath } from 'url'
-import { createRequire } from 'module'
-import { SyncTexJs } from './synctex/index.js'
+import * as server from "https://lib.deno.dev/x/oak@v9/mod.ts";
+import logger from "https://lib.deno.dev/x/oak_logger@v1/mod.ts";
+import * as path from "https://lib.deno.dev/std@v0/node/path.ts";
+import * as url from "https://lib.deno.dev/std@v0/node/url.ts";
+import { SyncTexJs } from "./synctex/index.ts";
 
-export default async function(pdf: string, port: number) {
-   const app = new App<any, Request & TinyWSRequest>()
-   const synctex = new SyncTexJs()
-   let conns = [] as WebSocket[]
+let connections = [] as WebSocket[];
 
-   watch(pdf, () => {
-      for (const conn of conns) {
-         conn.send(JSON.stringify({ type: 'refresh' }))
-      }
-   })
-
-   app
-      .use(tinyws())
-      .use('/viewer', sirv(resolve(dirname(fileURLToPath(import.meta.url)) + '/../../viewer')))
-      .use('/out', sirv(resolve(dirname(fileURLToPath(import.meta.url)) + '/../../out')))
-      .use('/build', sirv(dirname(createRequire(import.meta.url).resolve('pdfjs-dist'))))
-      .get('/pdf/*', async (req, res) => {
-         const absolutePath = req.path.replace('/pdf', '')
-         res.set('Cache-Control', 'no-store')
-         res.sendFile(absolutePath)
-      })
-      .get('/synctex', async (req, res) => {
-         // localhost:8080/synctex?line=10&tex=/absolute/path/to/tex&pdf=/absolute/path/to/pdf
-         const { line, tex } = req.query as any
-         const data = synctex.syncTexJsForward(parseInt(line), tex, pdf)
-         for (const conn of conns) {
-            conn.send(JSON.stringify({ type: 'synctex', data }))
-         }
-         res.sendStatus(200)
-      })
-      .get('/', async (req, res) => {
-         if (req.ws) {
-            const conn = await req.ws()
-            conns.push(conn)
-            conn.on('message', function(data: any) {
-               console.log(data)
-            }).on('close', function() {
-               conns = conns.filter(_conn => _conn !== conn)
-            })
-         } else {
-            res.redirect(`/viewer/viewer.html?file=/pdf${pdf}`)
-         }
-      })
-      .listen(port, () => {
-         console.log(`Viewer:  http://localhost:${port}/`)
-         console.log(`SyncTeX: http://localhost:${port}/synctex?line=<numebr>&tex=<string>`)
-      })
+export function synctexForward(line: number, tex: string, pdf: string) {
+  const synctex = new SyncTexJs();
+  const data = synctex.syncTexJsForward(line, tex, pdf);
+  for (const connection of connections) {
+    const message = JSON.stringify({ type: "synctex", data });
+    console.debug("sending " + message);
+    connection.send(message);
+  }
 }
+
+export function serve(addr: string, pdf: string): Promise<void> {
+  const app = new server.Application();
+  const router = new server.Router();
+  const cwd = path.dirname(url.fileURLToPath(import.meta.url));
+
+  router
+    .get("/viewer/(.*)", async (context) => {
+      const filePath = path.resolve(
+        path.join(cwd, "../", context.request.url.pathname),
+      );
+      console.debug("sending " + filePath);
+      await server.send(context, filePath, { root: "/" });
+    })
+    .get("/out/(.*)", async (context) => {
+      const filePath = path.resolve(
+        path.join(cwd, "../", context.request.url.pathname.replace("/out", "")),
+      );
+      console.debug("sending " + filePath);
+      await server.send(context, filePath, { root: "/" });
+    })
+    .get("/build/(.*)", async (context) => {
+      const filePath = path.resolve(
+        path.join(cwd, "../pdfjs-dist/", context.request.url.pathname),
+      );
+      console.debug("sending " + filePath);
+      await server.send(context, filePath, { root: "/" });
+    })
+    .get("/pdf/(.*)", async (context) => {
+      const filePath = context.request.url.pathname.replace("/pdf", "");
+      console.debug("sending " + filePath);
+      await server.send(context, filePath, { root: "/" });
+    })
+    .get("/start", (context) => {
+      context.response.redirect(`/viewer/viewer.html?file=/pdf${pdf}`);
+    })
+    .get("/", async (context) => {
+      const connconnection = await context.upgrade();
+      connections.push(connconnection);
+      connconnection.onmessage = (data) => {
+        console.debug(data);
+      };
+      connconnection.close = () => {
+        connections = connections.filter((c) => c !== connconnection);
+      };
+    });
+
+  const listener = app
+    .use(router.routes())
+    .use(router.allowedMethods())
+    .use(logger.logger)
+    .use(logger.responseTime)
+    .listen(addr);
+  console.info("listening on " + addr);
+  return listener;
+}
+
+await serve(
+  "localhost:8080",
+  path.resolve(
+    "/home/masaya/b/lenls2021/main.pdf",
+  ),
+);

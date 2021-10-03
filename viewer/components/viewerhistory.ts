@@ -1,4 +1,4 @@
-import type {ILatexWorkshopPdfViewer} from './interface.js'
+import type {ILatexWorkshopPdfViewer} from './interface.ts'
 
 export class ViewerHistory {
     private history: { scroll: number, temporary: boolean}[]

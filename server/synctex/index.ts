@@ -1,9 +1,9 @@
-import * as fs from 'fs'
-import * as iconv from 'iconv-lite'
-import * as path from 'path'
-import * as os from 'os'
-import * as zlib from 'zlib'
-import { PdfSyncObject, parseSyncTex, Block, SyncTexJsError } from './synctexjs.js'
+import * as fs from 'https://lib.deno.dev/std@0.x/node/fs.ts'
+import * as path from 'https://lib.deno.dev/std@0.x/node/path.ts'
+import * as os from 'https://lib.deno.dev/std@0.x/node/os.ts'
+import * as zlib from 'https://lib.deno.dev/x/denoflate@1.x/mod.ts'
+import { Buffer } from 'https://lib.deno.dev/std@0.x/node/buffer.ts'
+import { PdfSyncObject, parseSyncTex, Block, SyncTexJsError } from './synctexjs.ts'
 
 function normalize(filePath: string) {
     let normPath = path.normalize(filePath)
@@ -20,7 +20,7 @@ function isSameRealPath(filePathA: string, filePathB: string): boolean {
     return a === b
 }
 
-const iconvLiteSupportedEncodings = ['utf8', 'utf16le', 'UTF-16BE', 'UTF-16', 'Shift_JIS', 'Windows-31j', 'Windows932', 'EUC-JP', 'GB2312', 'GBK', 'GB18030', 'Windows936', 'EUC-CN', 'KS_C_5601', 'Windows949', 'EUC-KR', 'Big5', 'Big5-HKSCS', 'Windows950', 'ISO-8859-1', 'ISO-8859-1', 'ISO-8859-2', 'ISO-8859-3', 'ISO-8859-4', 'ISO-8859-5', 'ISO-8859-6', 'ISO-8859-7', 'ISO-8859-8', 'ISO-8859-9', 'ISO-8859-10', 'ISO-8859-11', 'ISO-8859-12', 'ISO-8859-13', 'ISO-8859-14', 'ISO-8859-15', 'ISO-8859-16', 'windows-874', 'windows-1250', 'windows-1251', 'windows-1252', 'windows-1253', 'windows-1254', 'windows-1255', 'windows-1256', 'windows-1257', 'windows-1258', 'koi8-r', 'koi8-u', 'koi8-ru', 'koi8-t']
+const TextDecoderSupportedEncodings =["utf-8","ibm866","iso-8859-2","iso-8859-3","iso-8859-4","iso-8859-5","iso-8859-6","iso-8859-7","iso-8859-8","iso-8859-8i","iso-8859-10","iso-8859-13","iso-8859-14","iso-8859-15","iso-8859-16","koi8-r","koi8-u","macintosh","windows-874","windows-1250","windows-1251","windows-1252","windows-1253","windows-1254","windows-1255","windows-1256","windows-1257","windows-1258","x-mac-cyrillic","gbk","gb18030","hz-gb-2312","big5","euc-jp","iso-2022-jp","shift-jis","euc-kr","iso-2022-kr","utf-16be","utf-16le","x-user-defined","replacement"]
 
 type SyncTeXRecordForward = {
     page: number,
@@ -105,7 +105,7 @@ export class SyncTexJs {
 
         try {
             const s = fs.readFileSync(synctexFile, {encoding: 'binary'})
-            return parseSyncTex(s)
+            return parseSyncTex(s.toString())
         } catch (e: unknown) {
             if (fs.existsSync(synctexFile)) {
                 console.warn(`[SyncTexJs] parseSyncTex failed with: ${synctexFile}`)
@@ -117,8 +117,8 @@ export class SyncTexJs {
 
         try {
             const data = fs.readFileSync(synctexFileGz)
-            const b = zlib.gunzipSync(data)
-            const s = b.toString('binary')
+            const b = zlib.gunzip(data)
+            const s = b.toString()
             return parseSyncTex(s)
         } catch (e: unknown) {
             if (fs.existsSync(synctexFileGz)) {
@@ -150,10 +150,11 @@ export class SyncTexJs {
             }
         }
         for (const inputFilePath in pdfSyncObject.blockNumberLine) {
-            for (const enc of iconvLiteSupportedEncodings) {
+            for (const enc of TextDecoderSupportedEncodings) {
                 let convertedInputFilePath = ''
                 try {
-                    convertedInputFilePath = iconv.decode(Buffer.from(inputFilePath, 'binary'), enc)
+                    const decoder = new TextDecoder(enc)
+                    convertedInputFilePath = decoder.decode(Buffer.from(inputFilePath, 'binary'))
                     if (isSameRealPath(convertedInputFilePath, filePath)) {
                         return inputFilePath
                     }
@@ -271,9 +272,10 @@ export class SyncTexJs {
         if (fs.existsSync(inputFilePath)) {
             return inputFilePath
         }
-        for (const enc of iconvLiteSupportedEncodings) {
+        for (const enc of TextDecoderSupportedEncodings) {
             try {
-                const s = iconv.decode(Buffer.from(inputFilePath, 'binary'), enc)
+                const decoder = new TextDecoder(enc)
+                const s = decoder.decode(Buffer.from(inputFilePath, 'binary'))
                 if (fs.existsSync(s)) {
                     return s
                 }
