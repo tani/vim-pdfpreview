@@ -1,20 +1,26 @@
-# w3pdf (WWW PDF Viewer)
+# PDF Preview for Vim
 
 This project is a fork of LaTeX Workshop, which is a plugin for VSCode.
-Our goal is to create the PDF.js server with SyncTeX.
+Our goal is to create the PDF.js application with SyncTeX.
 
 ## Installation
 
 ```
-$ npm install -g tani/w3pdf # or
-$ pnpm add -g tani/w3dpfa # or
-$ yarn add -g tani/w3pdf
+Plug 'vim-denops/denops.vim'
+Plug 'tani/vim-pdfpreview'
 ```
 
-## Usage
+## Commands
 
-- Launch server: `w3pdf -p 8080 /path/to/pdf`
-- Forward Search with SyncTeX: `curl localhost:8080/synctex?pdf=/path/to/pdf&tex=/path/to/tex&line=89`
+- Open PDF file `:PDFPreivew path/to/pdf`
+- SyncTeX forward search  `:PDFSearch`
+- SyncTeX refresh PDF  `:PDFRefresh`
+
+## Configuration
+
+- Hostname of PDF.js servr `g:pdfpreview#hostname`
+- Port number of PDF.js servr `g:pdfpreview#port`
+- Web browser for `:PDFPreivew`, `g:pdfpreview#browser`
 
 ## License
 
