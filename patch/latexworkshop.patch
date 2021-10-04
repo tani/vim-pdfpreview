@@ -1,0 +1,111 @@
+diff --git a/viewer/components/connection.ts b/viewer/components/connection.ts
+index 932dd410..e064b5ca 100644
+--- a/viewer/components/connection.ts
++++ b/viewer/components/connection.ts
+@@ -1,5 +1,5 @@
+-import type {ClientRequest} from './protocol.js'
+-import type {ILatexWorkshopPdfViewer} from './interface.js'
++import type {ClientRequest} from './protocol.ts'
++import type {ILatexWorkshopPdfViewer} from './interface.ts'
+ 
+ export interface IConnectionPort {
+     send(message: ClientRequest): void | Promise<void>,
+diff --git a/viewer/components/interface.ts b/viewer/components/interface.ts
+index 0addf441..59505dd8 100644
+--- a/viewer/components/interface.ts
++++ b/viewer/components/interface.ts
+@@ -1,7 +1,7 @@
+-import type {PageTrimmer} from './pagetrimmer.js'
+-import type {ClientRequest} from './protocol.js'
+-import type {SyncTex} from './synctex.js'
+-import type {ViewerHistory} from './viewerhistory.js'
++import type {PageTrimmer} from './pagetrimmer.ts'
++import type {ClientRequest} from './protocol.ts'
++import type {SyncTex} from './synctex.ts'
++import type {ViewerHistory} from './viewerhistory.ts'
+ 
+ export interface IDisposable {
+     dispose(): unknown
+diff --git a/viewer/components/pagetrimmer.ts b/viewer/components/pagetrimmer.ts
+index c419e1f7..c6af21af 100644
+--- a/viewer/components/pagetrimmer.ts
++++ b/viewer/components/pagetrimmer.ts
+@@ -1,4 +1,4 @@
+-import type {ILatexWorkshopPdfViewer, IPDFViewerApplication} from './interface.js'
++import type {ILatexWorkshopPdfViewer, IPDFViewerApplication} from './interface.ts'
+ 
+ declare const PDFViewerApplication: IPDFViewerApplication
+ 
+diff --git a/viewer/components/synctex.ts b/viewer/components/synctex.ts
+index b56c55e6..1dac5087 100644
+--- a/viewer/components/synctex.ts
++++ b/viewer/components/synctex.ts
+@@ -1,4 +1,4 @@
+-import type {ILatexWorkshopPdfViewer, IPDFViewerApplication} from './interface.js'
++import type {ILatexWorkshopPdfViewer, IPDFViewerApplication} from './interface.ts'
+ 
+ declare const PDFViewerApplication: IPDFViewerApplication
+ 
+diff --git a/viewer/components/utils.ts b/viewer/components/utils.ts
+index 5e9fce45..f4d2cd0f 100644
+--- a/viewer/components/utils.ts
++++ b/viewer/components/utils.ts
+@@ -1,4 +1,4 @@
+-export const pdfFilePrefix = 'pdf..'
++export const pdfFilePrefix = ''
+ 
+ // We use base64url to encode the path of PDF file.
+ // https://github.com/James-Yu/LaTeX-Workshop/pull/1501
+@@ -10,6 +10,7 @@ export function encodePath(path: string): string {
+ }
+ 
+ export function decodePath(b64url: string): string {
++  return b64url
+   const tmp = b64url + '='.repeat((4 - b64url.length % 4) % 4)
+   const b64 = tmp.replace(/-/g, '+').replace(/_/g, '/')
+   const s = window.atob(b64)
+diff --git a/viewer/components/viewerhistory.ts b/viewer/components/viewerhistory.ts
+index b0f3903c..cc765d3f 100644
+--- a/viewer/components/viewerhistory.ts
++++ b/viewer/components/viewerhistory.ts
+@@ -1,4 +1,4 @@
+-import type {ILatexWorkshopPdfViewer} from './interface.js'
++import type {ILatexWorkshopPdfViewer} from './interface.ts'
+ 
+ export class ViewerHistory {
+     private history: { scroll: number, temporary: boolean}[]
+diff --git a/viewer/latexworkshop.ts b/viewer/latexworkshop.ts
+index 88b6834e..ea2f885b 100644
+--- a/viewer/latexworkshop.ts
++++ b/viewer/latexworkshop.ts
+@@ -1,10 +1,10 @@
+-import {IConnectionPort, createConnectionPort} from './components/connection.js'
+-import type {IDisposable, ILatexWorkshopPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions} from './components/interface.js'
+-import {SyncTex} from './components/synctex.js'
+-import {PageTrimmer} from './components/pagetrimmer.js'
+-import type {ClientRequest, ServerResponse, PanelManagerResponse, PanelRequest, PdfViewerState} from './components/protocol.js'
+-import * as utils from './components/utils.js'
+-import {ViewerHistory} from './components/viewerhistory.js'
++import {IConnectionPort, createConnectionPort} from './components/connection.ts'
++import type {IDisposable, ILatexWorkshopPdfViewer, IPDFViewerApplication, IPDFViewerApplicationOptions} from './components/interface.ts'
++import {SyncTex} from './components/synctex.ts'
++import {PageTrimmer} from './components/pagetrimmer.ts'
++import type {ClientRequest, ServerResponse, PanelManagerResponse, PanelRequest, PdfViewerState} from './components/protocol.ts'
++import * as utils from './components/utils.ts'
++import {ViewerHistory} from './components/viewerhistory.ts'
+ 
+ declare const PDFViewerApplication: IPDFViewerApplication
+ declare const PDFViewerApplicationOptions: IPDFViewerApplicationOptions
+diff --git a/viewer/viewer.html b/viewer/viewer.html
+index 6bcc21e5..0d556b1a 100644
+--- a/viewer/viewer.html
++++ b/viewer/viewer.html
+@@ -42,7 +42,7 @@ See https://github.com/adobe-type-tools/cmap-resources
+ <!-- This snippet is used in production (included from viewer.html) -->
+ <link rel="resource" type="application/l10n" href="locale/locale.properties">
+ <script src="/build/pdf.js" defer></script>
+-<script src="/out/viewer/latexworkshop.js" type="module"></script>
++<script src="/viewer/latexworkshop.js" type="module"></script>
+ <script src="viewer.js" defer></script>
+   </head>
+ 

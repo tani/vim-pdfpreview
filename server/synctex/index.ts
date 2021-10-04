@@ -1,26 +1,11 @@
 import * as fs from 'https://lib.deno.dev/std@0.x/node/fs.ts'
 import * as path from 'https://lib.deno.dev/std@0.x/node/path.ts'
-import * as os from 'https://lib.deno.dev/std@0.x/node/os.ts'
-import * as zlib from 'https://lib.deno.dev/x/denoflate@1.x/mod.ts'
-import { Buffer } from 'https://lib.deno.dev/std@0.x/node/buffer.ts'
+import * as zlib from 'https://lib.deno.dev/x/compress@0.x/mod.ts'
 import { PdfSyncObject, parseSyncTex, Block, SyncTexJsError } from './synctexjs.ts'
 
-function normalize(filePath: string) {
-    let normPath = path.normalize(filePath)
-    if (os.platform() === 'win32') {
-        // Normalize drive letters on Windows.
-        normPath = normPath.replace(/^([a-zA-Z]):/, (_m, p1: string) => p1.toLocaleUpperCase() + ':')
-    }
-    return normPath
+export function isSameRealPath(filePathA: string, filePathB: string): boolean {
+    return Deno.realPathSync(filePathA) === Deno.realPathSync(filePathB)
 }
-
-function isSameRealPath(filePathA: string, filePathB: string): boolean {
-    const a = normalize(fs.realpathSync(path.normalize(filePathA)))
-    const b = normalize(fs.realpathSync(path.normalize(filePathB)))
-    return a === b
-}
-
-const TextDecoderSupportedEncodings =["utf-8","ibm866","iso-8859-2","iso-8859-3","iso-8859-4","iso-8859-5","iso-8859-6","iso-8859-7","iso-8859-8","iso-8859-8i","iso-8859-10","iso-8859-13","iso-8859-14","iso-8859-15","iso-8859-16","koi8-r","koi8-u","macintosh","windows-874","windows-1250","windows-1251","windows-1252","windows-1253","windows-1254","windows-1255","windows-1256","windows-1257","windows-1258","x-mac-cyrillic","gbk","gb18030","hz-gb-2312","big5","euc-jp","iso-2022-jp","shift-jis","euc-kr","iso-2022-kr","utf-16be","utf-16le","x-user-defined","replacement"]
 
 type SyncTeXRecordForward = {
     page: number,
@@ -116,9 +101,10 @@ export class SyncTexJs {
         }
 
         try {
+            const decoder = new TextDecoder()
             const data = fs.readFileSync(synctexFileGz)
             const b = zlib.gunzip(data)
-            const s = b.toString()
+            const s = decoder.decode(b)
             return parseSyncTex(s)
         } catch (e: unknown) {
             if (fs.existsSync(synctexFileGz)) {
@@ -146,23 +132,6 @@ export class SyncTexJs {
                 console.warn(`[SyncTexJs] isSameRealPath throws error: ${JSON.stringify({inputFilePath, filePath})}`)
                 if (e instanceof Error) {
                     console.error(e)
-                }
-            }
-        }
-        for (const inputFilePath in pdfSyncObject.blockNumberLine) {
-            for (const enc of TextDecoderSupportedEncodings) {
-                let convertedInputFilePath = ''
-                try {
-                    const decoder = new TextDecoder(enc)
-                    convertedInputFilePath = decoder.decode(Buffer.from(inputFilePath, 'binary'))
-                    if (isSameRealPath(convertedInputFilePath, filePath)) {
-                        return inputFilePath
-                    }
-                } catch (e: unknown) {
-                    console.warn(`[SyncTexJs] isSameRealPath throws error: ${JSON.stringify({inputFilePath, convertedInputFilePath, filePath})}`)
-                    if (e instanceof Error) {
-                        console.error(e)
-                    }
                 }
             }
         }
@@ -271,15 +240,6 @@ export class SyncTexJs {
     private convInputFilePath(inputFilePath: string): string {
         if (fs.existsSync(inputFilePath)) {
             return inputFilePath
-        }
-        for (const enc of TextDecoderSupportedEncodings) {
-            try {
-                const decoder = new TextDecoder(enc)
-                const s = decoder.decode(Buffer.from(inputFilePath, 'binary'))
-                if (fs.existsSync(s)) {
-                    return s
-                }
-            } catch {}
         }
 
         throw new SyncTexJsError(`Input file to jump to does not exist in the file system: ${inputFilePath}`)
