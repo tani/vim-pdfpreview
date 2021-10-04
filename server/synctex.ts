@@ -1,7 +1,7 @@
 import * as fs from 'https://lib.deno.dev/std@0.x/node/fs.ts'
 import * as path from 'https://lib.deno.dev/std@0.x/node/path.ts'
 import * as zlib from 'https://lib.deno.dev/x/compress@0.x/mod.ts'
-import { PdfSyncObject, parseSyncTex, Block, SyncTexJsError } from './synctexjs.ts'
+import { PdfSyncObject, parseSyncTex, Block, SyncTexJsError } from '../vendor/LaTeX-Workshop/src/lib/synctexjs.ts'
 
 export function isSameRealPath(filePathA: string, filePathB: string): boolean {
     return Deno.realPathSync(filePathA) === Deno.realPathSync(filePathB)

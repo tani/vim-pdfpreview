@@ -2,7 +2,7 @@ import * as server from "https://lib.deno.dev/x/oak@v9/mod.ts";
 import logger from "https://lib.deno.dev/x/oak_logger@v1/mod.ts";
 import * as path from "https://lib.deno.dev/std@v0/node/path.ts";
 import * as url from "https://lib.deno.dev/std@v0/node/url.ts";
-import { isSameRealPath, SyncTexJs } from "./synctex/index.ts";
+import { isSameRealPath, SyncTexJs } from "./synctex.ts";
 
 const cwd = path.dirname(url.fileURLToPath(import.meta.url));
 
