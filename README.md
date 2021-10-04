@@ -7,7 +7,7 @@ Our goal is to create the PDF.js application with SyncTeX.
 
 ```
 Plug 'vim-denops/denops.vim'
-Plug 'tani/vim-pdfpreview'
+Plug 'tani/vim-pdfpreview', { do: './bin/install.sh' }
 ```
 
 ## Commands
