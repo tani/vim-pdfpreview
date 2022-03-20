@@ -1,6 +1,6 @@
 [submodule "pdfjs-dist"]
 	path = vendor/pdfjs-dist
-	url = git://github.com/mozilla/pdfjs-dist.git
+	url = https://github.com/mozilla/pdfjs-dist.git
 [submodule "LaTeX-Workshop"]
 	path = vendor/LaTeX-Workshop
-	url = git://github.com/James-Yu/LaTeX-Workshop.git
+	url = https://github.com/James-Yu/LaTeX-Workshop.git
